@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyPaystackNextjsRequest } from 'paystack-sdk-node/nextjs';
 import { connectToDatabase } from '@/lib/db/mongodb';
-import { Transaction, User } from '@/lib/db/models';
+import { Transaction, Account } from '@/lib/db/models';
+import { verifyPaystackNextjsRequest } from 'paystack-sdk-node/nextjs';
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,13 +32,10 @@ export async function POST(req: NextRequest) {
         transaction.completedAt = new Date();
         await transaction.save();
 
-        // Send SMS notification to recipient
+        // Send SMS notification to recipient (optional)
         if (transaction.recipientDetails?.mobileNumber) {
-          await sendSMSNotification(
-            transaction.recipientDetails.mobileNumber,
-            transaction.amount,
-            transaction.transactionRef
-          );
+          console.log(`SMS to ${transaction.recipientDetails.mobileNumber}: ₵${transaction.amount} received. Ref: ${transaction.transactionRef}`);
+          // Implement actual SMS here if needed
         }
       }
     }
@@ -71,10 +68,4 @@ export async function POST(req: NextRequest) {
     console.error('Webhook error:', error);
     return new NextResponse('Internal Server Error', { status: 500 });
   }
-}
-
-// Function to send SMS (implement with your SMS provider)
-async function sendSMSNotification(phoneNumber: string, amount: number, reference: string) {
-  // Use Africa's Talking, Twilio, or any SMS provider
-  console.log(`SMS to ${phoneNumber}: ₵${amount} received. Ref: ${reference}`);
 }
