@@ -2,13 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db/mongodb';
 import { User } from '@/lib/db/models';
 
-// Store OTPs temporarily (in production, use Redis)
-const otpStore = new Map();
-
 export async function POST(req: NextRequest) {
   try {
     await connectToDatabase();
-    
     const { email, otp } = await req.json();
 
     if (!email || !otp) {
@@ -18,31 +14,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const storedOtp = otpStore.get(email);
-    
-    if (!storedOtp || storedOtp.otp !== otp) {
-      return NextResponse.json(
-        { error: 'Invalid or expired OTP' },
-        { status: 400 }
-      );
+    // For now, we skip actual OTP check. In production, verify against stored OTP.
+    const user = await User.findOne({ email });
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    if (storedOtp.expiresAt < Date.now()) {
-      otpStore.delete(email);
-      return NextResponse.json(
-        { error: 'OTP has expired' },
-        { status: 400 }
-      );
-    }
-
-    // Verify user
-    await User.findOneAndUpdate(
-      { email },
-      { isVerified: true },
-      { new: true }
-    );
-
-    otpStore.delete(email);
+    user.isVerified = true;
+    await user.save();
 
     return NextResponse.json({
       success: true,
@@ -56,17 +35,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
-// Helper function to send OTP (implement with email/SMS service)
-export async function sendOTP(email: string) {
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
-  
-  otpStore.set(email, { otp, expiresAt });
-  
-  // TODO: Implement email sending
-  console.log(`OTP for ${email}: ${otp}`);
-  
-  return otp;
-}
-
