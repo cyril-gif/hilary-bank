@@ -70,14 +70,6 @@ export async function POST(req: NextRequest) {
       status: 'ACTIVE',
     });
 
-    // Create notification preferences
-    const NotificationPrefs = mongoose.models.NotificationPrefs;
-    if (NotificationPrefs) {
-      await NotificationPrefs.create({
-        userId: user._id,
-      });
-    }
-
     // Remove password from response
     const userResponse = {
       id: user._id,
