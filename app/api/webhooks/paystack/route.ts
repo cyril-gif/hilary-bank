@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db/mongodb';
 import { Transaction, Account } from '@/lib/db/models';
-import { verifyPaystackNextjsRequest } from 'paystack-sdk-node/nextjs';
+//import { verifyPaystackNextjsRequest } from 'paystack-sdk-node/nextjs';
 
 export async function POST(req: NextRequest) {
   try {
