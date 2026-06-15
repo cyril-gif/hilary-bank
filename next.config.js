@@ -48,9 +48,9 @@ const nextConfig = {
   images: {
     domains: ['localhost', 'hilarysbank.com'],
   },
-  experimental: {
-    optimizeCss: true,
-  },
+ // experimental: {
+  //  optimizeCss: true,
+//  },
 };
 
 module.exports = withPWA(nextConfig);
