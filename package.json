@@ -31,7 +31,7 @@
     "postcss": "^8.4.47",
     "qrcode.react": "^3.1.0",
     "react": "^18.3.1",
-    "react-credit-cards-2": "^2.0.1",
+    "react-credit-cards-2": "^2.0.0",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.1",
     "recharts": "^2.13.0",
